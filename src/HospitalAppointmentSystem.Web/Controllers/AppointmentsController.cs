@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using HospitalAppointmentSystem.Domain.Entities;
 
 namespace HospitalAppointmentSystem.Web.Controllers;
 
@@ -147,6 +148,103 @@ public class AppointmentsController : Controller
             }).ToListAsync();
 
         return View(appointments);
+    }
+
+    [HttpPost]
+[ValidateAntiForgeryToken]
+    public async Task<IActionResult> Cancel(int id)
+    {
+        var identityUserId =
+            User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var patient = await _db.Patients
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x =>
+                x.IdentityUserId == identityUserId &&
+                x.IsActive);
+
+        if (patient == null)
+            return Forbid();
+
+        var appointment = await _db.Appointments
+            .FirstOrDefaultAsync(x =>
+                x.Id == id &&
+                x.PatientId == patient.Id);
+
+        if (appointment == null)
+            return NotFound();
+
+        try
+        {
+            appointment.Cancel();
+
+            _db.AppointmentStatusHistories.Add(
+               new AppointmentStatusHistory(
+                   appointment.Id,
+                   appointment.Status,
+                   DateTime.UtcNow,
+                    "Cancelled by patient"));
+
+            await _db.SaveChangesAsync();
+
+            TempData["SuccessMessage"] =
+                "Your appointment has been cancelled.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+
+    [HttpGet]
+    public async Task<IActionResult> History(int id)
+    {
+        var identityUserId =
+            User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var patient = await _db.Patients
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x =>
+                x.IdentityUserId == identityUserId &&
+                x.IsActive);
+
+        if (patient == null)
+            return Forbid();
+
+        var appointment = await _db.Appointments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x =>
+                x.Id == id &&
+                x.PatientId == patient.Id);
+
+        if (appointment == null)
+            return NotFound();
+
+        var events = await _db.AppointmentStatusHistories
+            .AsNoTracking()
+            .Where(x => x.AppointmentId == appointment.Id)
+            .OrderBy(x => x.ChangedAt)
+            .ThenBy(x => x.Id)
+            .Select(x => new AppointmentHistoryItemViewModel
+            {
+                Status = x.Status.ToString(),
+                ChangedAt = x.ChangedAt,
+                Note = x.Note
+            })
+            .ToListAsync();
+
+        var model = new AppointmentHistoryViewModel
+        {
+            AppointmentId = appointment.Id,
+            AppointmentStart = appointment.Start,
+            CurrentStatus = appointment.Status.ToString(),
+            Events = events
+        };
+
+        return View(model);
     }
 
     private async Task PopulateSelectionsAsync(

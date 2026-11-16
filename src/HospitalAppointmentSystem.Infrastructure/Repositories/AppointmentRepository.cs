@@ -24,8 +24,25 @@ public class AppointmentRepository : IAppointmentRepository
 
     public async Task AddAsync(Appointment appointment)
     {
+        await using var transaction =
+            await _context.Database.BeginTransactionAsync();
+
         await _context.Appointments.AddAsync(appointment);
         await _context.SaveChangesAsync();
+
+        var note = appointment.Status == AppointmentStatus.Approved
+            ? "Appointment automatically approved"
+            : "Appointment awaiting approval";
+
+        _context.AppointmentStatusHistories.Add(
+            new AppointmentStatusHistory(
+                appointment.Id,
+                appointment.Status,
+                DateTime.UtcNow,
+                note));
+
+        await _context.SaveChangesAsync();
+        await transaction.CommitAsync();
     }
 
     public async Task<bool> HasConflictAsync(

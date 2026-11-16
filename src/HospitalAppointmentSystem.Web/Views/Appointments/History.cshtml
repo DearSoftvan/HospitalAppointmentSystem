@@ -1,0 +1,61 @@
+@model HospitalAppointmentSystem.Web.ViewModels.AppointmentHistoryViewModel
+
+@{
+    ViewData["Title"] = "Appointment History";
+}
+
+<h2>Appointment History</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">
+            Appointment #@Model.AppointmentId
+        </h5>
+
+        <p class="mb-1">
+            <strong>Date:</strong>
+            @Model.AppointmentStart.ToString("yyyy-MM-dd HH:mm")
+        </p>
+
+        <p class="mb-0">
+            <strong>Current status:</strong>
+            @Model.CurrentStatus
+        </p>
+    </div>
+</div>
+
+<h4>Status Timeline</h4>
+
+@if (!Model.Events.Any())
+{
+    <div class="alert alert-info">
+        No status history has been recorded for this appointment.
+    </div>
+}
+else
+{
+    <div class="list-group mb-4">
+        @foreach (var item in Model.Events)
+        {
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between flex-wrap">
+                    <strong>@item.Status</strong>
+                    <small class="text-muted">
+                        @item.ChangedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
+                    </small>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(item.Note))
+                {
+                    <p class="mb-0 mt-2">@item.Note</p>
+                }
+            </div>
+        }
+    </div>
+}
+
+<a asp-controller="Appointments"
+   asp-action="Index"
+   class="btn btn-secondary">
+    Back to My Appointments
+</a>

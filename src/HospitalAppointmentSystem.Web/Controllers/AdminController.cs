@@ -4,6 +4,7 @@ using HospitalAppointmentSystem.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using HospitalAppointmentSystem.Domain.Entities;
 
 namespace HospitalAppointmentSystem.Web.Controllers;
 
@@ -67,6 +68,14 @@ public class AdminController : Controller
         }
 
         appointment.Approve();
+
+        _db.AppointmentStatusHistories.Add(
+            new AppointmentStatusHistory(
+                appointment.Id,
+                appointment.Status,
+             DateTime.UtcNow,
+             "Approved by administrator"));
+
         await _db.SaveChangesAsync();
 
         TempData["SuccessMessage"] =
@@ -94,6 +103,14 @@ public class AdminController : Controller
         }
 
         appointment.Reject();
+
+        _db.AppointmentStatusHistories.Add(
+            new AppointmentStatusHistory(
+                appointment.Id,
+                appointment.Status,
+               DateTime.UtcNow,
+               "Rejected by administrator"));
+
         await _db.SaveChangesAsync();
 
         TempData["SuccessMessage"] =
