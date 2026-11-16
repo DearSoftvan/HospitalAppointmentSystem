@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0" />
+
     <title>@ViewData["Title"] - Hospital Appointment System</title>
 
     <link rel="stylesheet"
@@ -14,10 +15,12 @@
           href="~/css/site.css"
           asp-append-version="true" />
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
+            <div class="container-fluid">
+
                 <a class="navbar-brand"
                    asp-controller="Home"
                    asp-action="Index">
@@ -38,6 +41,7 @@
                      id="mainNavigation">
 
                     <ul class="navbar-nav me-auto">
+
                         <li class="nav-item">
                             <a class="nav-link"
                                asp-controller="Home"
@@ -48,13 +52,54 @@
 
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            if (User.IsInRole("Admin"))
+                            @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link"
                                        asp-controller="Admin"
                                        asp-action="Index">
                                         Administration
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="Configuration"
+                                       asp-action="Index">
+                                        Hospital Configuration
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="StaffManagement"
+                                       asp-action="Index">
+                                        Staff Management
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="ScheduleManagement"
+                                       asp-action="Index">
+                                        Schedule Management
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="StaffAccounts"
+                                       asp-action="Index">
+                                        Staff Accounts
+                                    </a>
+                                </li>
+                            }
+                            else if (User.IsInRole("Staff"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="StaffPortal"
+                                       asp-action="Index">
+                                        My Staff Appointments
                                     </a>
                                 </li>
                             }
@@ -80,6 +125,7 @@
                     </ul>
 
                     <ul class="navbar-nav ms-auto">
+
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
@@ -117,6 +163,7 @@
                                 </a>
                             </li>
                         }
+
                     </ul>
                 </div>
             </div>

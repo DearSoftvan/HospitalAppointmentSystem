@@ -1,0 +1,155 @@
+@using HospitalAppointmentSystem.Domain.Entities
+
+@{
+    ViewData["Title"] = "Schedule Management";
+
+    var branches = (IEnumerable<Branch>)ViewBag.Branches;
+    var staffMembers = (IEnumerable<Staff>)ViewBag.Staff;
+    var workingHours = (IEnumerable<WorkingHours>)ViewBag.WorkingHours;
+    var availabilities = (IEnumerable<StaffAvailability>)ViewBag.Availabilities;
+}
+
+<h2>Schedule Management</h2>
+<p class="text-muted">
+    Define branch working hours and staff availability.
+</p>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h4>Branch Working Hours</h4>
+
+                <form asp-action="AddWorkingHours" method="post">
+                    <label class="form-label">Branch</label>
+                    <select name="branchId"
+                            class="form-select mb-3" required>
+                        @foreach (var branch in branches)
+                        {
+                            <option value="@branch.Id">@branch.Name</option>
+                        }
+                    </select>
+
+                    <label class="form-label">Day of week</label>
+                    <select name="dayOfWeek"
+                            class="form-select mb-3">
+                        @foreach (DayOfWeek day in Enum.GetValues<DayOfWeek>())
+                        {
+                            <option value="@((int)day)">@day</option>
+                        }
+                    </select>
+
+                    <label class="form-label">Start time</label>
+                    <input name="startTime" type="time"
+                           value="09:00" class="form-control mb-3"
+                           required />
+
+                    <label class="form-label">End time</label>
+                    <input name="endTime" type="time"
+                           value="17:00" class="form-control mb-3"
+                           required />
+
+                    <button class="btn btn-primary" type="submit">
+                        Add Working Hours
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h4>Staff Availability</h4>
+
+                <form asp-action="AddAvailability" method="post">
+                    <label class="form-label">Staff member</label>
+                    <select name="staffId"
+                            class="form-select mb-3" required>
+                        @foreach (var staff in staffMembers)
+                        {
+                            <option value="@staff.Id">
+                                @staff.FullName (@staff.Profession)
+                            </option>
+                        }
+                    </select>
+
+                    <label class="form-label">Start date and time</label>
+                    <input name="start" type="datetime-local"
+                           class="form-control mb-3" required />
+
+                    <label class="form-label">End date and time</label>
+                    <input name="end" type="datetime-local"
+                           class="form-control mb-3" required />
+
+                    <button class="btn btn-success" type="submit">
+                        Add Availability
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4>Branch Working Hours</h4>
+<div class="table-responsive mb-4">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Branch</th>
+                <th>Day</th>
+                <th>Start</th>
+                <th>End</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in workingHours)
+        {
+            <tr>
+                <td>
+                    @(branches.FirstOrDefault(x => x.Id == item.BranchId)?.Name
+                      ?? $"Branch #{item.BranchId}")
+                </td>
+                <td>@item.DayOfWeek</td>
+                <td>@item.StartTime.ToString("HH:mm")</td>
+                <td>@item.EndTime.ToString("HH:mm")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<h4>Upcoming Staff Availability</h4>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Staff</th>
+                <th>Start</th>
+                <th>End</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in availabilities)
+        {
+            <tr>
+                <td>
+                    @(staffMembers.FirstOrDefault(x => x.Id == item.StaffId)?.FullName
+                      ?? $"Staff #{item.StaffId}")
+                </td>
+                <td>@item.Start.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@item.End.ToString("yyyy-MM-dd HH:mm")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

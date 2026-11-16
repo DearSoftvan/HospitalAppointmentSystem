@@ -1,0 +1,154 @@
+@using HospitalAppointmentSystem.Domain.Entities
+
+@{
+    ViewData["Title"] = "Staff Management";
+
+    var staffMembers = (IEnumerable<Staff>)ViewBag.Staff;
+    var branches = (IEnumerable<Branch>)ViewBag.Branches;
+    var services = (IEnumerable<HealthcareService>)ViewBag.Services;
+    var assignments = (IEnumerable<StaffService>)ViewBag.Assignments;
+}
+
+<h2>Staff Management</h2>
+<p class="text-muted">
+    Register healthcare professionals and assign services.
+</p>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h4>Add Healthcare Professional</h4>
+
+                <form asp-action="AddStaff" method="post">
+                    <label class="form-label">Branch</label>
+                    <select name="branchId" class="form-select mb-3" required>
+                        @foreach (var branch in branches)
+                        {
+                            <option value="@branch.Id">@branch.Name</option>
+                        }
+                    </select>
+
+                    <label class="form-label">Full name</label>
+                    <input name="fullName"
+                           class="form-control mb-3"
+                           maxlength="200" required />
+
+                    <label class="form-label">Profession</label>
+                    <select name="profession"
+                            class="form-select mb-3" required>
+                        <option value="1">Doctor</option>
+                        <option value="2">Nurse</option>
+                        <option value="3">Laboratory Technician</option>
+                    </select>
+
+                    <label class="form-label">
+                        Specialty (required for doctors)
+                    </label>
+                    <input name="specialty"
+                           class="form-control mb-3"
+                           maxlength="200"
+                           placeholder="e.g. Neurology" />
+
+                    <button type="submit" class="btn btn-primary">
+                        Add Staff
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h4>Assign Healthcare Service</h4>
+
+                <form asp-action="AssignService" method="post">
+                    <label class="form-label">Staff member</label>
+                    <select name="staffId"
+                            class="form-select mb-3" required>
+                        @foreach (var staff in staffMembers.Where(x => x.IsActive))
+                        {
+                            <option value="@staff.Id">
+                                @staff.FullName (@staff.Profession)
+                            </option>
+                        }
+                    </select>
+
+                    <label class="form-label">Healthcare service</label>
+                    <select name="healthcareServiceId"
+                            class="form-select mb-3" required>
+                        @foreach (var service in services)
+                        {
+                            <option value="@service.Id">@service.Name</option>
+                        }
+                    </select>
+
+                    <button type="submit" class="btn btn-success">
+                        Assign Service
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4>Registered Staff</h4>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Profession</th>
+                <th>Specialty</th>
+                <th>Branch</th>
+                <th>Assigned Services</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var staff in staffMembers)
+            {
+                <tr>
+                    <td>@staff.Id</td>
+                    <td>@staff.FullName</td>
+                    <td>@staff.Profession</td>
+                    <td>
+                        @if (staff is Doctor doctor)
+                        {
+                            @doctor.Specialty
+                        }
+                        else
+                        {
+                            <span>—</span>
+                        }
+                    </td>
+                    <td>
+                        @(branches.FirstOrDefault(x => x.Id == staff.BranchId)?.Name
+                            ?? $"Branch #{staff.BranchId}")
+                    </td>
+                    <td>
+                        @foreach (var assignment in assignments.Where(
+                            x => x.StaffId == staff.Id))
+                        {
+                            var service = services.FirstOrDefault(
+                                x => x.Id == assignment.HealthcareServiceId);
+
+                            <div>@(service?.Name ?? $"Service #{assignment.HealthcareServiceId}")</div>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

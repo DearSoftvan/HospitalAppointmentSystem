@@ -1,0 +1,66 @@
+@model HospitalAppointmentSystem.Web.ViewModels.CreateStaffAccountViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Staff Accounts";
+    var staffOptions =
+        (IEnumerable<SelectListItem>)ViewBag.StaffOptions;
+}
+
+<h2>Staff Account Management</h2>
+
+<p>Create a login account for an existing healthcare professional.</p>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Index" method="post">
+            <div asp-validation-summary="All"
+                 class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="StaffId" class="form-label">
+                    Staff member
+                </label>
+
+                <select asp-for="StaffId"
+                        asp-items="staffOptions"
+                        class="form-select">
+                    <option value="0">Select staff</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ConfirmPassword"
+                       class="form-label"></label>
+                <input asp-for="ConfirmPassword"
+                       class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary"
+                    disabled="@(!staffOptions.Any())">
+                Create Staff Account
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

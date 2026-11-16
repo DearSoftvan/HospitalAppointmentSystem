@@ -1,0 +1,203 @@
+@using HospitalAppointmentSystem.Domain.Entities
+@using HospitalAppointmentSystem.Domain.Enums
+
+@{
+    ViewData["Title"] = "Healthcare Configuration";
+
+    var organizations =
+        (IEnumerable<HealthcareOrganization>)ViewBag.Organizations;
+
+    var branches =
+        (IEnumerable<Branch>)ViewBag.Branches;
+
+    var departments =
+        (IEnumerable<Department>)ViewBag.Departments;
+
+    var services =
+        (IEnumerable<HealthcareService>)ViewBag.Services;
+}
+
+<h2 class="mb-3">Healthcare Configuration</h2>
+<p class="text-muted">
+    Manage healthcare organizations, branches, departments and services.
+</p>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<div class="row g-4">
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h4>Add Organization</h4>
+                <form asp-action="AddOrganization" method="post">
+                    <label class="form-label">Organization name</label>
+                    <input name="name" class="form-control mb-3"
+                           required maxlength="200" />
+
+                    <label class="form-label">Approval policy</label>
+                    <select name="approvalMode" class="form-select mb-3">
+                        <option value="1">Automatic</option>
+                        <option value="2">Manual</option>
+                    </select>
+
+                    <button class="btn btn-primary">Add Organization</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h4>Add Branch</h4>
+                <form asp-action="AddBranch" method="post">
+                    <label class="form-label">Organization</label>
+                    <select name="organizationId"
+                            class="form-select mb-3" required>
+                        @foreach (var item in organizations)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </select>
+
+                    <label class="form-label">Branch name</label>
+                    <input name="name" class="form-control mb-3"
+                           required maxlength="200" />
+
+                    <label class="form-label">Address</label>
+                    <input name="address" class="form-control mb-3"
+                           required maxlength="500" />
+
+                    <button class="btn btn-primary">Add Branch</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h4>Add Department</h4>
+                <form asp-action="AddDepartment" method="post">
+                    <label class="form-label">Branch</label>
+                    <select name="branchId"
+                            class="form-select mb-3" required>
+                        @foreach (var item in branches)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </select>
+
+                    <label class="form-label">Department name</label>
+                    <input name="name" class="form-control mb-3"
+                           required maxlength="200" />
+
+                    <button class="btn btn-primary">Add Department</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h4>Add Healthcare Service</h4>
+                <form asp-action="AddService" method="post">
+                    <label class="form-label">Service name</label>
+                    <input name="name" class="form-control mb-3"
+                           required maxlength="200" />
+
+                    <label class="form-label">Duration (minutes)</label>
+                    <input name="durationMinutes" type="number"
+                           min="1" class="form-control mb-3" required />
+
+                    <label class="form-label">Price</label>
+                    <input name="price" type="number"
+                           min="0" step="0.01"
+                           class="form-control mb-3" required />
+
+                    <button class="btn btn-primary">Add Service</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-4" />
+
+<h4>Existing Organizations</h4>
+<table class="table table-striped">
+    <thead>
+        <tr><th>ID</th><th>Name</th><th>Approval</th></tr>
+    </thead>
+    <tbody>
+    @foreach (var item in organizations)
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.Name</td>
+            <td>@item.ApprovalMode</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<h4>Existing Branches</h4>
+<table class="table table-striped">
+    <thead>
+        <tr><th>ID</th><th>Name</th><th>Organization ID</th></tr>
+    </thead>
+    <tbody>
+    @foreach (var item in branches)
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.Name</td>
+            <td>@item.OrganizationId</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<h4>Existing Departments</h4>
+<table class="table table-striped">
+    <thead>
+        <tr><th>ID</th><th>Name</th><th>Branch ID</th></tr>
+    </thead>
+    <tbody>
+    @foreach (var item in departments)
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.Name</td>
+            <td>@item.BranchId</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<h4>Existing Healthcare Services</h4>
+<table class="table table-striped">
+    <thead>
+        <tr><th>ID</th><th>Name</th><th>Minutes</th><th>Price</th></tr>
+    </thead>
+    <tbody>
+    @foreach (var item in services)
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.Name</td>
+            <td>@item.DurationMinutes</td>
+            <td>@item.Price</td>
+        </tr>
+    }
+    </tbody>
+</table>

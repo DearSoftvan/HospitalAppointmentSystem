@@ -1,0 +1,49 @@
+@model IEnumerable<HospitalAppointmentSystem.Web.ViewModels.StaffAppointmentViewModel>
+
+@{
+    ViewData["Title"] = "My Staff Appointments";
+}
+
+<h2>My Appointments</h2>
+
+<p class="text-muted">
+    <strong>@ViewBag.StaffName</strong>
+    — @ViewBag.Profession
+</p>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No appointments assigned to you.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Appointment</th>
+                    <th>Patient</th>
+                    <th>Service</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>#@item.Id</td>
+                        <td>@item.PatientName</td>
+                        <td>@item.ServiceName</td>
+                        <td>@item.Start.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@item.End.ToString("HH:mm")</td>
+                        <td>@item.Status</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
