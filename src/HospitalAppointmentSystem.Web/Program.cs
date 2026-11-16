@@ -6,6 +6,7 @@ using HospitalAppointmentSystem.Application.Interfaces;
 using HospitalAppointmentSystem.Infrastructure.Repositories;
 using HospitalAppointmentSystem.Application.Services;
 using HospitalAppointmentSystem.Application.Strategies;
+using HospitalAppointmentSystem.Web.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,6 +76,20 @@ builder.Services.AddScoped<IApprovalStrategy, AutomaticApprovalStrategy>();
 builder.Services.AddScoped<IApprovalStrategy, ManualApprovalStrategy>();
 
 var app = builder.Build();
+
+// Insert sample data only in the development environment.
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+
+    var db = scope.ServiceProvider
+        .GetRequiredService<ApplicationDbContext>();
+
+    await DevelopmentDataSeeder.SeedAsync(db);
+
+    await DevelopmentAdminSeeder.SeedAsync(
+        scope.ServiceProvider);
+}
 
 if (!app.Environment.IsDevelopment())
 {
