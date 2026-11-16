@@ -504,3 +504,7 @@ appsettings.*.Local.json
 TestResults/
 coverage/
 *.trx
+
+# Local backup files
+*.bak
+*.backup
