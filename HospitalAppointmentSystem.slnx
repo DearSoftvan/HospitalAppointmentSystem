@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HospitalAppointmentSystem.Application/HospitalAppointmentSystem.Application.csproj" />
+    <Project Path="src/HospitalAppointmentSystem.Domain/HospitalAppointmentSystem.Domain.csproj" />
+    <Project Path="src/HospitalAppointmentSystem.Infrastructure/HospitalAppointmentSystem.Infrastructure.csproj" />
+    <Project Path="src/HospitalAppointmentSystem.Web/HospitalAppointmentSystem.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HospitalAppointmentSystem.IntegrationTests/HospitalAppointmentSystem.IntegrationTests.csproj" />
+    <Project Path="tests/HospitalAppointmentSystem.UnitTests/HospitalAppointmentSystem.UnitTests.csproj" />
+  </Folder>
+</Solution>
