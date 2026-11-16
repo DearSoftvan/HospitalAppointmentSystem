@@ -290,6 +290,49 @@ namespace HospitalAppointmentSystem.Infrastructure.Data.Migrations
                     b.ToTable("StaffAvailabilities", (string)null);
                 });
 
+            modelBuilder.Entity("HospitalAppointmentSystem.Domain.Entities.StaffRegistrationRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("IdentityUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Profession")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ReviewedByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Specialty")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId", "Status");
+
+                    b.HasIndex("IdentityUserId", "Status");
+
+                    b.ToTable("StaffRegistrationRequests", (string)null);
+                });
+
             modelBuilder.Entity("HospitalAppointmentSystem.Domain.Entities.StaffService", b =>
                 {
                     b.Property<int>("StaffId")
@@ -647,6 +690,21 @@ namespace HospitalAppointmentSystem.Infrastructure.Data.Migrations
                     b.HasOne("HospitalAppointmentSystem.Domain.Entities.Staff", null)
                         .WithMany()
                         .HasForeignKey("StaffId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HospitalAppointmentSystem.Domain.Entities.StaffRegistrationRequest", b =>
+                {
+                    b.HasOne("HospitalAppointmentSystem.Domain.Entities.Branch", null)
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HospitalAppointmentSystem.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("IdentityUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

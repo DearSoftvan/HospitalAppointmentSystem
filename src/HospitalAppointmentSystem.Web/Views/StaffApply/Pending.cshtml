@@ -1,0 +1,44 @@
+@model IEnumerable<HospitalAppointmentSystem.Web.ViewModels.StaffApplicationStatusViewModel>
+
+@{
+    ViewData["Title"] = "My Staff Applications";
+}
+
+<h2>My Staff Applications</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        You do not have any staff applications.
+    </div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Application</th>
+                <th>Branch ID</th>
+                <th>Profession</th>
+                <th>Specialty</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>#@item.Id</td>
+                    <td>@item.BranchId</td>
+                    <td>@item.Profession</td>
+                    <td>@item.Specialty</td>
+                    <td>@item.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<p class="text-muted">
+    Staff access is enabled only after administrator approval.
+</p>

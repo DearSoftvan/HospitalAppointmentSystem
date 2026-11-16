@@ -1,0 +1,84 @@
+@model IEnumerable<HospitalAppointmentSystem.Web.ViewModels.StaffApplicationReviewViewModel>
+
+@{
+    ViewData["Title"] = "Staff Applications";
+}
+
+<h2>Pending Staff Applications</h2>
+
+<p class="text-muted">
+    Review applications from doctors, nurses and laboratory technicians.
+</p>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No pending staff applications.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Applicant</th>
+                    <th>Email</th>
+                    <th>Branch</th>
+                    <th>Profession</th>
+                    <th>Specialty</th>
+                    <th>Application Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.ApplicantName</td>
+                        <td>@item.Email</td>
+                        <td>@item.BranchName</td>
+                        <td>@item.Profession</td>
+                        <td>@(item.Specialty ?? "—")</td>
+                        <td>@item.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <form asp-action="Approve" method="post">
+                                    <input type="hidden" name="id"
+                                           value="@item.Id" />
+                                    <button type="submit"
+                                            class="btn btn-success btn-sm">
+                                        Approve
+                                    </button>
+                                </form>
+
+                                <form asp-action="Reject" method="post">
+                                    <input type="hidden" name="id"
+                                           value="@item.Id" />
+                                    <button type="submit"
+                                            class="btn btn-outline-danger btn-sm">
+                                        Reject
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

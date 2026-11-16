@@ -42,6 +42,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<AppointmentStatusHistory> AppointmentStatusHistories
         => Set<AppointmentStatusHistory>();
 
+    public DbSet<StaffRegistrationRequest> StaffRegistrationRequests
+        => Set<StaffRegistrationRequest>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
